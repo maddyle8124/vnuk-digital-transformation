@@ -1,0 +1,18 @@
+.DS_Store
+
+# Local/generated build artifacts
+.chart-data-*/
+.cx-report-build/
+.report-build/
+.slide-build/
+.slide-build-*/
+.transcript-build/
+.week5-build/
+
+# Editor and local environment files
+.env
+.env.*
+!.env.example
+node_modules/
+__pycache__/
+*.pyc
