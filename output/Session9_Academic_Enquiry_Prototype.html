@@ -1,0 +1,728 @@
+<title>Academic Enquiry Desk</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+/* Layout: a student help-centre website. Sticky top nav, search-first home, article pages, request + tracking, plus staff and pilot views for the demo. */
+:root{
+  --bg:#F2F5F5; --surface:#FCFDFD; --surface-2:#E5ECEC; --line:#CDD9DB;
+  --ink:#14324A; --text:#33475A; --muted:#5B6E7C;
+  --accent:#0F7C80; --accent-ink:#FCFDFD; --accent-soft:#D6ECEB;
+  --hero:#14324A; --hero-ink:#F2F5F5; --hero-muted:#A9C1CB;
+  --warn:#9A4413; --warn-soft:#F6E5D9; --bad:#A3261D; --bad-soft:#F7DEDB; --ok:#1C6B3E; --ok-soft:#DCEFE2;
+  --mono:'IBM Plex Mono','Courier New',monospace; --sans:'IBM Plex Sans',Arial,sans-serif;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#0E1B25; --surface:#152634; --surface-2:#1C3242; --line:#2B4557; --ink:#E6EEF1; --text:#C3D2D9; --muted:#8FA5B1;
+  --accent:#4FBFBF; --accent-ink:#0E1B25; --accent-soft:#18393F; --hero:#0A2233; --hero-ink:#E6EEF1; --hero-muted:#8FA5B1;
+  --warn:#F0A877; --warn-soft:#3A2A1F; --bad:#F29389; --bad-soft:#3D2222; --ok:#7FD49E; --ok-soft:#173527; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#0E1B25; --surface:#152634; --surface-2:#1C3242; --line:#2B4557; --ink:#E6EEF1; --text:#C3D2D9; --muted:#8FA5B1;
+  --accent:#4FBFBF; --accent-ink:#0E1B25; --accent-soft:#18393F; --hero:#0A2233; --hero-ink:#E6EEF1; --hero-muted:#8FA5B1;
+  --warn:#F0A877; --warn-soft:#3A2A1F; --bad:#F29389; --bad-soft:#3D2222; --ok:#7FD49E; --ok-soft:#173527; color-scheme:dark}
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--text);font-family:var(--sans);font-size:16px;line-height:1.55}
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:10;background:var(--surface)}
+h1,h2,h3,h4{color:var(--ink);margin:0;line-height:1.2;text-wrap:balance}
+p{margin:0}
+a{color:var(--accent)}
+button,input,select,textarea{font:inherit;color:inherit}
+button{cursor:pointer}
+:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.gut{padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+.inner{max-width:1120px;margin:0 auto}
+.banner{background:var(--warn-soft);color:var(--warn);font-size:13px;padding-block:6px}
+nav.top{position:sticky;top:env(safe-area-inset-top,0px);z-index:5;background:var(--surface);border-bottom:1px solid var(--line)}
+nav.top .inner{display:flex;align-items:center;gap:8px;flex-wrap:wrap;padding-block:10px}
+.brand{display:flex;align-items:center;gap:10px;margin-right:auto;text-decoration:none;color:var(--ink);font-weight:700;font-size:17px}
+.mark{width:30px;height:30px;border-radius:8px;background:var(--accent);color:var(--accent-ink);display:grid;place-items:center;font-size:15px;font-weight:700}
+.navlinks{display:flex;gap:2px;flex-wrap:wrap}
+.navlinks a{padding:6px 10px;border-radius:7px;text-decoration:none;color:var(--muted);font-weight:500;font-size:14px}
+.navlinks a[aria-current="page"]{background:var(--accent-soft);color:var(--ink)}
+.navlinks a.staff{border:1px dashed var(--line)}
+.who{font-size:13px;color:var(--muted);display:flex;align-items:center;gap:8px}
+.hero{background:var(--hero);color:var(--hero-ink);padding-block:44px 52px}
+.hero h1{color:var(--hero-ink);font-size:clamp(28px,4.5vw,42px);letter-spacing:-.01em}
+.hero p.sub{color:var(--hero-muted);margin-top:8px;max-width:60ch}
+.search{display:flex;gap:8px;margin-top:22px;max-width:760px}
+.search input{flex:1;min-width:0;border:0;border-radius:10px;padding:14px 16px;font-size:17px;background:var(--surface);color:var(--ink)}
+.btn{border:1px solid var(--line);background:var(--surface);padding:9px 14px;border-radius:9px;font-weight:600;font-size:15px;color:var(--ink);text-decoration:none;display:inline-flex;align-items:center;gap:6px}
+.btn:hover{background:var(--surface-2)}
+.btn.primary{background:var(--accent);border-color:var(--accent);color:var(--accent-ink)}
+.btn.small{padding:5px 10px;font-size:13px}
+.hero .btn.primary{padding:0 20px}
+.pop{display:flex;flex-wrap:wrap;gap:8px;margin-top:16px}
+.pop button{background:transparent;border:1px solid var(--hero-muted);color:var(--hero-ink);border-radius:999px;padding:5px 12px;font-size:14px}
+.pop button:hover{background:rgba(255,255,255,.08)}
+main{padding-block:28px 48px}
+.section{display:flex;flex-direction:column;gap:14px;margin-bottom:34px}
+.section>h2{font-size:22px}
+.eyebrow{font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);font-weight:600}
+.cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:12px}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:16px;display:flex;flex-direction:column;gap:8px;min-width:0}
+a.card{text-decoration:none;color:inherit}
+a.card:hover,button.card:hover{border-color:var(--accent)}
+button.card{text-align:left}
+.card h3{font-size:17px}
+.card .meta{font-size:13px;color:var(--muted)}
+.two{display:grid;grid-template-columns:minmax(0,2fr) minmax(0,1fr);gap:20px;align-items:start}
+.chip{display:inline-block;font-size:12px;font-weight:600;padding:2px 9px;border-radius:999px;background:var(--surface-2);color:var(--muted)}
+.chip.ok{background:var(--ok-soft);color:var(--ok)} .chip.warn{background:var(--warn-soft);color:var(--warn)} .chip.bad{background:var(--bad-soft);color:var(--bad)} .chip.info{background:var(--accent-soft);color:var(--accent)}
+.chips{display:flex;flex-wrap:wrap;gap:6px;align-items:center}
+.answer{border:2px solid var(--accent);border-radius:14px;background:var(--surface);padding:20px;display:flex;flex-direction:column;gap:12px}
+.answer h2{font-size:22px}
+ol.steps,ul.rules{margin:0;padding-left:22px;display:flex;flex-direction:column;gap:6px}
+.facts{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;border-top:1px solid var(--line);padding-top:12px;font-size:14px}
+.facts dt{font-size:11px;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);font-weight:600}
+.facts dd{margin:0;color:var(--ink);word-break:break-word}
+dl{margin:0}
+.alert{border-radius:12px;padding:14px 16px;display:flex;flex-direction:column;gap:6px}
+.alert.warn{background:var(--warn-soft);color:var(--warn)} .alert.bad{background:var(--bad-soft);color:var(--bad)} .alert.ok{background:var(--ok-soft);color:var(--ok)} .alert.info{background:var(--accent-soft);color:var(--ink)}
+.rate{display:flex;gap:6px;align-items:center;flex-wrap:wrap}
+.rate button{width:38px;height:38px;border-radius:9px;border:1px solid var(--line);background:var(--surface);font-weight:700;color:var(--ink)}
+.rate button:hover{background:var(--accent-soft)}
+.side{display:flex;flex-direction:column;gap:12px}
+.list{display:flex;flex-direction:column;border:1px solid var(--line);border-radius:12px;background:var(--surface);overflow:hidden}
+.list a,.list button.li{display:flex;justify-content:space-between;gap:10px;padding:12px 14px;border:0;border-bottom:1px solid var(--line);text-decoration:none;color:var(--ink);background:transparent;text-align:left;width:100%}
+.list a:last-child,.list button.li:last-child{border-bottom:0}
+.list a:hover,.list button.li:hover{background:var(--surface-2)}
+.list small{color:var(--muted)}
+form.req{display:flex;flex-direction:column;gap:14px}
+label.f{display:flex;flex-direction:column;gap:5px;font-size:14px;font-weight:600;color:var(--ink)}
+label.f span.h{font-weight:400;color:var(--muted);font-size:13px}
+input.t,select,textarea{border:1px solid var(--line);border-radius:9px;padding:10px 12px;background:var(--surface);width:100%}
+textarea{min-height:110px;resize:vertical}
+.mail{font-family:var(--mono);font-size:13px;background:var(--surface-2);border-radius:10px;padding:14px;white-space:pre-wrap;word-break:break-word}
+.rid{font-family:var(--mono);font-weight:500;color:var(--ink);background:var(--accent-soft);padding:1px 7px;border-radius:6px;white-space:nowrap}
+.track{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:4px;font-size:13px}
+.track span{padding:7px 4px;border-top:4px solid var(--line);color:var(--muted);text-align:center}
+.track span.on{border-color:var(--accent);color:var(--ink);font-weight:600}
+.tablewrap{overflow-x:auto;border:1px solid var(--line);border-radius:12px;background:var(--surface)}
+table{border-collapse:collapse;width:100%;font-size:14px;min-width:640px}
+th,td{text-align:left;padding:10px 12px;border-bottom:1px solid var(--line);vertical-align:top}
+th{font-size:12px;text-transform:uppercase;letter-spacing:.05em;color:var(--muted)}
+tr:last-child td{border-bottom:0}
+.kpis{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:10px}
+.kpi{background:var(--surface);border:1px solid var(--line);border-left:5px solid var(--accent);border-radius:10px;padding:12px;display:flex;flex-direction:column;gap:2px}
+.kpi.ok{border-left-color:var(--ok)} .kpi.warn{border-left-color:var(--warn)}
+.kpi b{font-size:26px;color:var(--ink);font-variant-numeric:tabular-nums}
+.kpi small{color:var(--muted);font-size:12px}
+.log{font-family:var(--mono);font-size:12.5px;max-height:320px;overflow-y:auto;border:1px solid var(--line);border-radius:10px;background:var(--surface)}
+.log div{display:grid;grid-template-columns:70px minmax(0,1fr);gap:8px;padding:6px 10px;border-bottom:1px solid var(--line)}
+.log time{color:var(--muted)}
+.empty{color:var(--muted);padding:20px;text-align:center;background:var(--surface);border:1px dashed var(--line);border-radius:12px}
+.mark-hl{background:var(--accent-soft);color:var(--ink);border-radius:3px;padding:0 2px}
+footer{border-top:1px solid var(--line);padding-block:20px;color:var(--muted);font-size:13px}
+.toast{position:fixed;left:50%;bottom:calc(20px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);background:var(--ink);color:var(--bg);padding:10px 16px;border-radius:10px;font-size:14px;z-index:20}
+.teamlinks{display:flex;gap:2px;align-items:center;padding-left:8px;margin-left:4px;border-left:1px solid var(--line)}
+.teamlinks span{font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);font-weight:600;margin-right:2px}
+.teamlinks a{padding:6px 9px;border-radius:7px;text-decoration:none;color:var(--muted);font-size:13px}
+.teamlinks a[aria-current="page"]{background:var(--accent-soft);color:var(--ink)}
+.chatwrap{max-width:780px;margin:0 auto;display:flex;flex-direction:column;min-height:calc(100vh - 150px)}
+.welcome{display:flex;flex-direction:column;align-items:center;text-align:center;gap:10px;padding-block:40px 14px}
+.welcome h1{font-size:clamp(26px,4vw,34px)}
+.welcome p{color:var(--muted);max-width:52ch}
+.msgs{display:flex;flex-direction:column;gap:14px;padding-block:18px;flex:1}
+.brow{display:flex;gap:10px;align-items:flex-end;max-width:92%}
+.brow .av{flex:none;width:38px;height:38px}
+.bcol{display:flex;flex-direction:column;gap:8px;min-width:0}
+.bubble{padding:11px 15px;border-radius:18px;background:var(--surface);border:1px solid var(--line);border-bottom-left-radius:6px;min-width:0;overflow-wrap:anywhere}
+.bubble.me{align-self:flex-end;max-width:80%;background:var(--accent);color:var(--accent-ink);border-color:var(--accent);border-radius:18px;border-bottom-right-radius:6px}
+.acard{background:var(--surface);border:1px solid var(--line);border-left:4px solid var(--accent);border-radius:14px;padding:14px 16px;display:flex;flex-direction:column;gap:8px}
+.acard h4{font-size:16px}
+.acard ol{margin:0;padding-left:20px;display:flex;flex-direction:column;gap:3px}
+.acard .src{font-size:12.5px;color:var(--muted)}
+.acard.warn{border-left-color:var(--warn)}
+.mini{display:flex;gap:4px;align-items:center;flex-wrap:wrap;font-size:13px;color:var(--muted)}
+.mini button{width:30px;height:30px;border-radius:8px;border:1px solid var(--line);background:var(--surface);font-weight:700;color:var(--ink);font-size:13px}
+.mini button:hover{background:var(--accent-soft)}
+.composer{position:sticky;bottom:0;background:var(--bg);padding-block:8px calc(14px + env(safe-area-inset-bottom,0px))}
+.composer form{display:flex;gap:8px;align-items:center;background:var(--surface);border:1px solid var(--line);border-radius:999px;padding:6px 6px 6px 18px;box-shadow:0 6px 24px rgba(20,50,74,.10)}
+.composer input{flex:1;border:0;background:transparent;min-width:0;font-size:16px;padding:8px 0;color:var(--ink)}
+.composer input:focus{outline:none}
+.composer form:focus-within{border-color:var(--accent)}
+.send{flex:none;border:0;border-radius:999px;width:44px;height:44px;background:var(--accent);color:var(--accent-ink);font-size:20px;font-weight:700}
+.composer .hint{font-size:12px;color:var(--muted);text-align:center;margin-top:6px}
+.sugs{display:flex;flex-wrap:wrap;gap:8px;justify-content:center;max-width:680px}
+.sugs button{border:1px solid var(--line);background:var(--surface);color:var(--ink);border-radius:999px;padding:8px 14px;font-size:14px}
+.sugs button:hover{border-color:var(--accent);background:var(--accent-soft)}
+.dots{display:inline-flex;gap:4px;padding:4px 2px}
+.dots i{width:7px;height:7px;border-radius:50%;background:var(--muted);display:block}
+@media (prefers-reduced-motion:no-preference){.dots i{animation:blink 1s infinite}.dots i:nth-child(2){animation-delay:.15s}.dots i:nth-child(3){animation-delay:.3s}@keyframes blink{0%,80%,100%{opacity:.25}40%{opacity:1}} .mascot-wave .wing-r{transform-origin:78px 62px;animation:wave 1.6s ease-in-out 2}@keyframes wave{0%,100%{transform:rotate(0)}50%{transform:rotate(-18deg)}}}
+.inline-form{display:flex;gap:8px;flex-wrap:wrap}
+.inline-form input{flex:1;min-width:180px;border:1px solid var(--line);border-radius:9px;padding:9px 12px;background:var(--surface)}
+@media (max-width:820px){.two{grid-template-columns:minmax(0,1fr)} .facts{grid-template-columns:minmax(0,1fr)} .search{flex-direction:column} .hero .btn.primary{padding:12px 20px;justify-content:center}}
+</style>
+
+<div class="banner gut"><div class="inner"><b>Class prototype</b> · DBB43005 Group 1 · Guidance drafted from one student’s VNUK email history (2024–2026), not yet approved by Academic Affairs. Not an official VNUK service.</div></div>
+<nav class="top gut" aria-label="Main"><div class="inner">
+  <a class="brand" href="#home"><span id="brandmark" aria-hidden="true"></span>Ask Nuki <span style="font-weight:400;color:var(--muted);font-size:14px">· Academic Enquiry Desk</span></a>
+  <div class="navlinks" id="navlinks"></div>
+  <div class="who" id="who"></div>
+</div></nav>
+<div id="view"></div>
+<footer class="gut"><div class="inner">Prototype for the Student Support and Academic Navigation MVP · Approved-guidance retrieval, routing with one request ID, status tracking and feedback · <button class="btn small" data-act="reset" type="button">Clear demo data</button></div></footer>
+<div id="toast" class="toast" hidden></div>
+
+<script>
+(function(){
+/* ---------- offices (from the department map) ---------- */
+const OFFICES={
+ aa:{name:'Academic Affairs and Quality Assurance Office',vi:'Phòng Đào tạo & ĐBCLGD',email:'academic.affairs@vnuk.udn.vn',extra:'0236 3646 577',does:'Course registration and adjustment, credit limits, timetable clashes, summer semester, GDQPAN, PE classes, VSTEP exam registration, grades publication'},
+ assess:{name:'Assessment Unit',vi:'Tổ Khảo thí',email:'assessment@vnuk.udn.vn',extra:'3rd floor',does:'Official exam schedule, final-exam re-marking'},
+ fin:{name:'Finance team',vi:'Tổ Tài vụ',email:'accounting@vnuk.udn.vn',extra:'',does:'Tuition notices and deadlines, PE fees, payment reconciliation'},
+ it:{name:'IT Support',vi:'Bộ phận IT',email:'it.support@vnuk.edu.vn',extra:'Admin Office',does:'Portal and Canvas login, Microsoft Teams, fee-lookup page errors'},
+ ibm:{name:'IBM Faculty office',vi:'Khoa IBM',email:'ibm@vnuk.udn.vn',extra:'',does:'Class cancellations, make-up classes, final project schedules'},
+ sa:{name:'Student Affairs',vi:'Phòng Công tác sinh viên',email:'student.affairs@vnuk.udn.vn',extra:'',does:'Scholarships, health insurance, conduct score, counselling, parking'},
+ found:{name:'English Foundation Programmes',vi:'Tổ Ngôn ngữ & Dự bị ĐH',email:'foundation@vnuk.udn.vn',extra:'',does:'VSTEP preparation classes'},
+ career:{name:'Career Service',vi:'Trung tâm Hướng nghiệp',email:'careerservice@vnuk.edu.vn',extra:'',does:'Internships, job opportunities, career events'},
+ intl:{name:'International Office',vi:'Phòng KH & HTQT',email:'internationaloffice@vnuk.edu.vn',extra:'',does:'Study abroad, international workshops'},
+ lect:{name:'Your course lecturer',vi:'Giảng viên phụ trách',email:'(lecturer’s own email)',extra:'',does:'Absence, late arrival, assignments, component grades'}
+};
+const TOPICS=[
+ {id:'reg',name:'Registration & credits',vi:'Đăng ký học phần'},
+ {id:'exam',name:'Exams & grades',vi:'Thi & điểm'},
+ {id:'fee',name:'Tuition & fees',vi:'Học phí'},
+ {id:'req',name:'Required modules',vi:'GDTC · GDQPAN · VSTEP'},
+ {id:'class',name:'Classes & lecturers',vi:'Lớp học & giảng viên'},
+ {id:'life',name:'Scholarships, careers & more',vi:'Học bổng · việc làm'}
+];
+/* ---------- knowledge base: each item traced to an email ---------- */
+let KB=[
+ {id:'reg-window',topic:'reg',office:'aa',title:'Registering or adjusting courses during the registration window',
+  kw:['register','registration','add course','adjust','dang ky hoc phan','dang ky tin chi','dieu chinh hoc phan','dang ky mon','window'],
+  summary:'Register and adjust courses yourself on the training portal, but only inside the announced window.',
+  steps:['Read the Academic Affairs notice (“Thông báo số 1”) for the window dates.','Sign in to daotao.vnuk.udn.vn and register or adjust within the window.','Check your timetable afterwards: Academic Affairs may move you to another section to fix clashes or class size.'],
+  rules:['Semester I 2026–2027 adjustment window: 17:00 on 7 Jul to 23:59 on 9 Jul 2026.','Requests after the window are not processed.'],
+  source:'Academic Affairs notice and reply, Jul 2026',asof:'Jul 2026'},
+ {id:'credit-limit',topic:'reg',office:'aa',title:'Taking more than the credit limit',
+  kw:['credit limit','23 credits','23 tin chi','gioi han tin chi','vuot tin chi','more credits','extra course','them tin chi','overload','them mon'],
+  summary:'The limit is 23 credits per semester. Extra courses after the window are not added; plan them for the summer semester.',
+  steps:['Register up to 23 credits during the window.','If you need more to graduate on time, watch for the summer semester notice.','Ask before the window closes; requests after it are refused.'],
+  rules:['Limit: 23 credits per semester.','Reply of 16 Jan 2026: the window had closed, so the request could not be processed.'],
+  source:'Academic Affairs reply, 16 Jan 2026',asof:'Jan 2026'},
+ {id:'missed-window',topic:'reg',office:'aa',title:'I missed the registration window',
+  kw:['missed','late registration','after deadline','qua han dang ky','tre han','het han dang ky','window closed','dang ky muon'],
+  summary:'Late additions are not supported once the window closes. Use the summer semester or the next window.',
+  steps:['Check whether a summer semester is announced for the course.','Register in the next window.','If a portal fault stopped you registering, send a request now with screenshots so the fault is on record.'],
+  rules:['Academic Affairs does not add courses after the window.'],
+  source:'Academic Affairs reply, 16 Jan 2026',asof:'Jan 2026'},
+ {id:'withdraw',topic:'reg',office:'aa',title:'Withdrawing from a course or reducing your load',
+  kw:['withdraw','drop','rut hoc phan','rut mon','reduce','giam tin chi','khoi luong'],
+  summary:'Email Academic Affairs with the exact course sections you want removed. They confirm by email.',
+  steps:['List each course and section (for example “Design Thinking (4)”).','Explain briefly why (for example, focusing on graduation requirements).','Send to Academic Affairs during or soon after the adjustment period.'],
+  rules:['Sep 2025: three courses withdrawn on request and confirmed by email.'],
+  source:'Academic Affairs reply, Sep 2025',asof:'Sep 2025'},
+ {id:'prereq',topic:'reg',office:'aa',title:'Registering when a prerequisite is not finished',
+  kw:['prerequisite','hoc phan tien quyet','hoc truoc','summer','hoc ky he','don de nghi'],
+  summary:'Submit the course-request form (Đơn đề nghị đăng ký học phần). Academic Affairs checks it against the prerequisite rule.',
+  steps:['Fill in the course-request form.','Send it to Academic Affairs before the summer or semester window closes.','Watch for their decision; self-registered courses may be reviewed.'],
+  rules:['May 2026: the request was reviewed against the unfinished prerequisite.'],
+  source:'Academic Affairs reply, 14 May 2026',asof:'May 2026'},
+ {id:'clash',topic:'reg',office:'aa',title:'Timetable clash between two courses',
+  kw:['clash','trung lich','overlap','conflict','can lich','chuyen lop','change section'],
+  summary:'Tell Academic Affairs which courses clash. They move you to another section if one exists.',
+  steps:['Name both courses, their sections and the clashing slot.','Suggest an alternative section if you know one.','Wait for their confirmation email before attending the new section.'],
+  rules:['Jul 2026: a requested slot did not exist, so the course could not be added.','Academic Affairs also moves students between sections on its own to remove clashes.'],
+  source:'Academic Affairs replies, Jul 2025 and Jul 2026',asof:'Jul 2026'},
+ {id:'login',topic:'reg',office:'it',title:'I can’t log in to the training portal',
+  kw:['login','log in','dang nhap','password','mat khau','portal','daotao','khong vao duoc','loi he thong','error'],
+  summary:'Email Academic Affairs with the error details. They forward it to IT. Mention any deadline.',
+  steps:['Note the exact error and what you tried (cache, other browser, other device).','Email Academic Affairs and say which deadline you are at risk of missing.','Keep the request ID so you can follow up.'],
+  rules:['Jul 2026: Academic Affairs forwarded the login problem to IT the same day.'],
+  source:'Student request and forward to IT, 7 Jul 2026',asof:'Jul 2026'},
+ {id:'exam-schedule',topic:'exam',office:'assess',title:'Finding your official exam schedule',
+  kw:['exam schedule','lich thi','exam room','phong thi','exam time','thi cuoi ky','final exam'],
+  summary:'The Assessment Unit emails the official schedule as an attachment. Check date, time, format and room for each course.',
+  steps:['Open the “Thông báo lịch thi chính thức” email and its attachment.','Check every registered course.','Contact Academic Affairs if a course is missing.'],
+  rules:['Semester I 2026–2027 schedule sent on 5 Nov 2026 (resent the same day).'],
+  source:'Assessment Unit notice, 5 Nov 2026',asof:'Nov 2026'},
+ {id:'remark',topic:'exam',office:'assess',title:'Questioning a grade or asking for re-marking',
+  kw:['remark','re-mark','phuc khao','grade appeal','check grade','thac mac diem','diem thanh phan','component grade','khieu nai diem'],
+  summary:'Component grades: ask your lecturer. Final-exam re-marking: email the Assessment Unit before the deadline.',
+  steps:['Component-grade questions go to your lecturer before the deadline.','For final-exam re-marking, email assessment@vnuk.udn.vn or go to the 3rd floor.','Submit before the deadline; late requests are not considered.'],
+  rules:['Semester 3 2025–2026 deadline: 27 Aug 2026.','This portal cannot see or change your grades.'],
+  source:'Academic Affairs notice, 13 Aug 2026',asof:'Aug 2026'},
+ {id:'see-grades',topic:'exam',office:'aa',title:'I can’t see my grades',
+  kw:['see grades','xem diem','khong thay diem','course evaluation','danh gia hoc phan','grades missing','chua co diem'],
+  summary:'Grades appear on daotao.vnuk.udn.vn after you complete the course evaluation. Late grades are added when lecturers submit them.',
+  steps:['Complete the course evaluation (đánh giá học phần) on the portal.','Then check your grades.','If evaluation has closed, ask Academic Affairs; they reopened it in Sep 2024.'],
+  rules:['Grades still missing usually mean the lecturer has not submitted them yet.'],
+  source:'Academic Affairs notices, 2024–2026',asof:'Aug 2026'},
+ {id:'tuition',topic:'fee',office:'fin',title:'Paying tuition',
+  kw:['tuition','hoc phi','pay','payment','nop hoc phi','dong hoc phi','fee','transfer','chuyen khoan'],
+  summary:'Check the amount on the fee page, then pay by bank transfer before the deadline in the Finance notice.',
+  steps:['Look up the amount at daotao.vnuk.udn.vn/get-hoc-phi.','Pay by bank transfer to the account in the Finance notice.','Use the reference “Full name – Student ID – semester”.'],
+  rules:['Unpaid after the extended deadline: study account locked and documents paused (Apr 2026 notice).'],
+  source:'Finance notices, Apr and Jun 2026',asof:'Jun 2026'},
+ {id:'fee-issue',topic:'fee',office:'fin',title:'Fee page error, or I paid but still got a reminder',
+  kw:['fee page','get-hoc-phi','loi trang','reminder','nhac nho','da nop','paid already','doi chieu','reconcile','late payment','nop tre'],
+  summary:'Email Finance with a screenshot or the transfer details. They can confirm the amount or match your payment.',
+  steps:['Attach a screenshot of the error, or the bank transfer receipt.','Include your name, student ID and semester.','Finance replies and passes system faults to IT.'],
+  rules:['Jul 2026: Finance sent the fee directly within about an hour and reported the bug to IT.'],
+  source:'Finance reply, 8 Jul 2026',asof:'Jul 2026'},
+ {id:'pe',topic:'req',office:'aa',title:'Physical education (PE) classes',
+  kw:['pe','physical education','giao duc the chat','gdtc','the duc','non-graded'],
+  summary:'Register PE as announced and pay the separate PE fee. The Saturday class is for health-limited students only.',
+  steps:['Register in the announced PE round.','Pay the PE fee to Finance by the deadline.','For the health-limited class, provide medical records to Academic Affairs.'],
+  rules:['Small classes may be merged; Academic Affairs moves students.','Jul 2026: moving to the Saturday class needed official medical records.'],
+  source:'Academic Affairs reply, 22 Jul 2026',asof:'Jul 2026'},
+ {id:'gdqpan',topic:'req',office:'aa',title:'Defence and security education (GDQPAN)',
+  kw:['gdqpan','quoc phong','defence','defense','quan su','military'],
+  summary:'GDQPAN runs in rounds at the training centre. You can ask to move rounds, but you must finish it to graduate.',
+  steps:['Check the round dates in the Academic Affairs notice.','To skip a round, email Academic Affairs with the reason (for example, health).','Join a later round as soon as possible.'],
+  rules:['Required for graduation.','Example rounds: 10–31 Aug 2025; 6–26 Apr 2026; 20 Jul – 9 Aug 2026.'],
+  source:'Academic Affairs replies, Jul 2025 and Jun 2026',asof:'Jun 2026'},
+ {id:'vstep',topic:'req',office:'aa',title:'English exit standard (VSTEP)',
+  kw:['vstep','english','tieng anh','chuan dau ra','ngoai ngu','exit standard','language certificate'],
+  summary:'Register for VSTEP rounds through Academic Affairs notices. Prep classes are run by English Foundation Programmes.',
+  steps:['Watch for “ĐĂNG KÝ THI CHUẨN ĐẦU RA NGOẠI NGỮ (VSTEP)” notices.','Register with the form in the notice.','Optional prep class: register by the Foundation link (12 sessions + 2 computer tests).'],
+  rules:['Next round: 29 Nov 2026.','November prep class registration closed 29 Oct 2026.'],
+  source:'Academic Affairs and Foundation notices, Oct 2026',asof:'Oct 2026'},
+ {id:'absence',topic:'class',office:'lect',title:'Missing a class or arriving late',
+  kw:['absence','absent','miss class','miss a class','vang','nghi hoc','late','den muon','xin phep','sick','om','accident'],
+  summary:'Email your lecturer directly, before class if you can. The lecturer decides; no office is involved.',
+  steps:['Subject: course name + “Absence request” or “Late arrival”.','Give the reason and offer documents if needed.','Ask how to catch up (quizzes, materials).'],
+  rules:['Lecturers may reschedule an in-class quiz; follow their reply.'],
+  source:'Lecturer replies, 2025–2026',asof:'Oct 2026'},
+ {id:'assignment',topic:'class',office:'lect',title:'Changing an assignment topic or presenting on another date',
+  kw:['assignment','topic','de tai','doi de tai','present','thuyet trinh','deadline extension','gia han'],
+  summary:'Ask the lecturer by email with a short reason and your proposed change.',
+  steps:['Explain the change and why.','Propose the new topic or date.','Wait for the lecturer’s written agreement.'],
+  rules:['Lecturer’s decision.'],
+  source:'Lecturer threads, 2026',asof:'Oct 2026'},
+ {id:'cancel',topic:'class',office:'ibm',title:'Class cancellations and final presentation schedules',
+  kw:['cancel','cancellation','huy lop','nghi day','make-up','hoc bu','final presentation','final project','lich bao ve'],
+  summary:'The faculty office emails cancellations and sends calendar invitations for final presentations.',
+  steps:['Check email from your faculty office (IBM: ibm@vnuk.udn.vn).','Accept the calendar invitation.','Make-up class details follow in a separate email.'],
+  rules:['Example: DBM Final Project, Digital Innovation and Transformation, 25 Nov 2026, 13:30–17:10.'],
+  source:'IBM Faculty emails, Aug–Nov 2026',asof:'Nov 2026'},
+ {id:'scholar',topic:'life',office:'sa',title:'Scholarships, health insurance and student support',
+  kw:['scholarship','hoc bong','insurance','bhyt','bao hiem','conduct','diem ren luyen','counselling','tham van','parking','gui xe'],
+  summary:'Student Affairs announces scholarships and handles insurance, conduct scores, counselling and parking.',
+  steps:['Read [CTSVDNTT] notices from Student Affairs.','Apply by the form and deadline in each notice.','Ask Student Affairs about eligibility.'],
+  rules:['Examples: Keidanren & JCCI, Orion, “Nâng bước sinh viên”, academic encouragement scholarships.'],
+  source:'Student Affairs notices, 2025–2026',asof:'Nov 2026'},
+ {id:'career',topic:'life',office:'career',title:'Internships and jobs',
+  kw:['internship','thuc tap','job','viec lam','career','huong nghiep','cv'],
+  summary:'Career Service sends monthly job and internship lists and runs the summer internship programme.',
+  steps:['Read the monthly “Job/Internship Opportunity” email.','Register for the summer internship programme by its form.','Contact Career Service for help with applications.'],
+  rules:['Latest list: Job/Internship Opportunity 11.2026.'],
+  source:'Career Service emails, 2026',asof:'Nov 2026'},
+ {id:'intl',topic:'life',office:'intl',title:'Study abroad and international workshops',
+  kw:['study abroad','du hoc','exchange','international','workshop','postgraduate','singapore','new zealand'],
+  summary:'The International Office announces study-abroad fairs, postgraduate outreach and international workshops.',
+  steps:['Watch for International Office emails.','Register through the link in each announcement.'],
+  rules:['Examples in 2026: SMU workshop, New Zealand study fair, Singapore postgraduate outreach.'],
+  source:'International Office emails, 2026',asof:'Nov 2026'},
+ {id:'canvas',topic:'class',office:'it',title:'A course is missing on Canvas',
+  kw:['canvas','lms','missing course','thieu mon','khong thay mon','1 mon','course access','teams'],
+  summary:'Canvas shows only courses you are officially registered for. If one is missing, check your registration first.',
+  steps:['Check your registered courses on daotao.vnuk.udn.vn.','If the course is not there, confirm registration with Academic Affairs.','If it is registered but still missing, email IT Support with a screenshot.'],
+  rules:['IT reply: a student not on the class list cannot see the course; confirm registration at Academic Affairs.','Jan 2026: the Canvas address changed; use the link in the IT notice.'],
+  source:'IT Support replies and notice, 2024–2026',asof:'Jan 2026'},
+ {id:'mos',topic:'life',office:'ibm',title:'MOS (Microsoft Office Specialist) certificate',
+  kw:['mos','microsoft office','tin hoc','chung chi tin hoc','office specialist'],
+  summary:'VNUK runs MOS preparation classes only. Exam dates and fees come from IIG Vietnam (Da Nang branch).',
+  steps:['Register for the prep class from the faculty notice.','Contact IIG Vietnam, Da Nang branch, for exam dates and registration.'],
+  rules:['Faculty reply: the school organises the prep class, not the exam.'],
+  source:'IBM Faculty reply to a student',asof:'2026'},
+ {id:'bhyt',topic:'life',office:'sa',title:'Health insurance (BHYT) payment',
+  kw:['bhyt','health insurance','bao hiem y te','bao hiem'],
+  summary:'Student Affairs collects health insurance each school year and announces the deadline. Ask them if you missed it.',
+  steps:['Read the [CTSVDNTT-BHYT] notice for amount and deadline.','Check your current card’s expiry date.','If you missed the deadline, email Student Affairs before buying insurance elsewhere.'],
+  rules:['2026–2027 collection announced for cohorts K20–K22.'],
+  source:'Student Affairs notices, 2026',asof:'2026'},
+ {id:'graduation',topic:'req',office:'aa',title:'Graduation application and documents',
+  kw:['graduation','tot nghiep','xet tot nghiep','ho so tot nghiep','le phuc','graduate'],
+  summary:'Academic Affairs opens graduation application rounds by notice. Prepare the listed documents and requirements first.',
+  steps:['Read the “Mở đợt nộp hồ sơ xét Tốt nghiệp” notice.','Check required modules: PE, GDQPAN, political courses and VSTEP.','Ask Academic Affairs how to submit soft copies before the deadline.'],
+  rules:['This desk does not decide whether you are eligible to graduate.'],
+  source:'Academic Affairs notices and student questions, 2025',asof:'2025'}
+];
+/* questions needing an official decision: never answered, always routed */
+const GUARD=[
+ {re:/\b(my grade|my gpa|my mark|diem cua em|diem cua toi|toi duoc bao nhieu diem|em duoc bao nhieu diem)\b/,why:'This portal cannot read or interpret your grades.',office:'aa'},
+ {re:/(eligib|du dieu kien|can i graduate|tot nghiep duoc khong|enough credits|du tin chi)/,why:'Eligibility and graduation decisions are made by Academic Affairs.',office:'aa'},
+ {re:/(how much do i owe|bao nhieu tien|toi no|em no|con no|so tien hoc phi cua)/,why:'Your exact fee is held by Finance and the fee page; this portal does not read it.',office:'fin'}
+];
+const POPULAR=['credit limit','học phí','phúc khảo','can\'t log in','missed registration','VSTEP','xin phép vắng'];
+
+/* ---------- state ---------- */
+let S;
+function seed(){
+  let me=null; try{ me=localStorage.getItem('aed_me'); }catch(e){}
+  S={me,chat:[],typing:false,query:'',lastResults:null,requests:[],ratings:[],gaps:[],dup:0,events:[],history:[],staffSel:null,dbState:'connecting'};
+}
+seed();
+/* ---------- shared database (db capability); falls back to this tab only ---------- */
+let DB=null;
+const tsort=(a,b)=>(b.at||0)-(a.at||0);
+function saveReq(r){ if(DB) DB.collection('requests').doc(r.id).set(JSON.parse(JSON.stringify(r))).catch(()=>toast('Could not save. Check your connection.')); }
+function addFeedback(f){ f.at=Date.now(); if(f.kind==='rating') S.ratings.push(f.n); else S.gaps.unshift(f); if(DB) DB.collection('feedback').add(f).catch(()=>{}); }
+function nextId(){ const n=S.requests.map(r=>+String(r.id).split('-')[2]||0); return 'REQ-2611-'+String(Math.max(41,...n)+1).padStart(4,'0'); }
+function liveRender(){ const h=(location.hash||'#home').slice(1); const a=document.activeElement; if(a&&/INPUT|TEXTAREA|SELECT/.test(a.tagName)) return; if(['requests','staff','pilot','history'].includes(h)){ NOSCROLL=true; route(); NOSCROLL=false; } }
+let NOSCROLL=false;
+(async()=>{
+  await null; /* let the rest of the script define its helpers first */
+  try{ DB=window.claude&&window.claude.use?await window.claude.use('db'):null; }catch(e){ DB=null; }
+  if(!DB){ S.dbState='off'; liveRender(); return; }
+  S.dbState='on';
+  const err=()=>{S.dbState='off';liveRender();};
+  DB.collection('requests').onSnapshot(s=>{S.requests=s.docs.map(d=>d.data()).sort(tsort);liveRender();},err);
+  DB.collection('feedback').onSnapshot(s=>{const all=s.docs.map(d=>d.data());S.ratings=all.filter(f=>f.kind==='rating').map(f=>f.n);S.gaps=all.filter(f=>f.kind==='gap').sort(tsort);liveRender();},err);
+  DB.collection('events').orderBy('at','desc').limit(80).onSnapshot(s=>{S.events=s.docs.map(d=>d.data());liveRender();},err);
+  DB.collection('guides').onSnapshot(sn=>{sn.docs.forEach(d=>{const g=d.data();if(!g||!g.id||!g.title||!OFFICES[g.office]||!TOPICS.find(t=>t.id===g.topic))return;const i=KB.findIndex(k=>k.id===g.id);const k={id:g.id,topic:g.topic,office:g.office,title:String(g.title),kw:(g.kw||[]).map(String),summary:String(g.summary||''),steps:(g.steps||[]).map(String),rules:(g.rules||[]).map(String),source:String(g.source||''),asof:String(g.asof||'')};if(i>=0)KB[i]=k;else KB.push(k);});buildIndex();liveRender();},()=>{});
+  DB.collection('history').onSnapshot(s=>{S.history=s.docs.map(d=>d.data()).sort((a,b)=>String(b.date).localeCompare(String(a.date)));liveRender();},err);
+})();
+
+/* ---------- helpers ---------- */
+const esc=s=>String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const fold=s=>String(s).toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g,'').replace(/đ/g,'d').replace(/[^a-z0-9\- ]/g,' ').replace(/\s+/g,' ').trim();
+const now=()=>new Date().toTimeString().slice(0,5);
+function log(e){const ev={t:now(),e,at:Date.now()};S.events.unshift(ev);if(DB)DB.collection('events').add(ev).catch(()=>{});}
+function toast(m){const t=document.getElementById('toast');t.textContent=m;t.hidden=false;clearTimeout(toast._t);toast._t=setTimeout(()=>t.hidden=true,2600)}
+let KBF=[];function buildIndex(){KBF=KB.map(k=>({k,kw:k.kw.map(fold),title:fold(k.title),body:fold(k.summary+' '+k.steps.join(' ')+' '+k.rules.join(' '))}));}buildIndex();
+function search(q){
+  const f=' '+fold(q)+' ';
+  for(const g of GUARD) if(g.re.test(f)) return {guard:g};
+  const toks=f.trim().split(' ').filter(w=>w.length>2);
+  const res=KBF.map(x=>{let s=0;
+    for(const k of x.kw){ if(f.includes(' '+k+' ')||f.includes(' '+k)) s+=k.includes(' ')?6:4; }
+    for(const w of toks){ if(x.title.includes(w)) s+=2; else if(x.body.includes(w)) s+=0.5; }
+    return {k:x.k,s};}).filter(r=>r.s>0).sort((a,b)=>b.s-a.s);
+  return {res,confident:res.length&&res[0].s>=5};
+}
+function hl(text,q){const ws=fold(q).split(' ').filter(w=>w.length>3);let out=esc(text);return out;}
+
+/* ---------- routing ---------- */
+const PAGES=['home','topics','offices','requests','staff','pilot'];
+function route(){
+  const h=(location.hash||'#home').slice(1);
+  if(h.startsWith('a-')) return renderArticle(h.slice(2));
+  if(h.startsWith('t-')) return renderTopic(h.slice(2));
+  if((h==='ask'||h==='requests')&&!S.me){ S.after=h; return renderSignin(); }
+  if(h==='signin') return renderSignin();
+  if(h==='history') return renderHistory();
+  if(h.startsWith('status-')) return renderStatus(h.slice(7),'staff');
+  if(h.startsWith('rate-')) return renderStatus(h.slice(5),'student');
+  if(h==='ask') return renderAsk();
+  if(h==='results') return renderResults();
+  ({home:renderHome,topics:renderTopics,offices:renderOffices,requests:renderRequests,staff:renderStaff,pilot:renderPilot}[h]||renderHome)();
+}
+function nav(cur){
+  const main=[['home','Chat'],['topics','Topics'],['offices','Offices'],['requests','My requests']];
+  const team=[['staff','Department email'],['pilot','Pilot log'],['history','History']];
+  const L=([k,v])=>'<a href="#'+k+'" '+(cur===k?'aria-current="page"':'')+'>'+v+'</a>';
+  document.getElementById('navlinks').innerHTML=main.map(L).join('')+'<div class="teamlinks"><span>Team</span>'+team.map(L).join('')+'</div>';
+  document.getElementById('who').innerHTML=(S.me?'<span class="chip ok">'+esc(S.me)+'</span><button class="btn small" type="button" data-act="signout">Sign out</button>':'<a class="btn small primary" href="#signin">Sign in</a>')+(S.dbState==='on'?' <span class="chip info" title="Requests are saved for everyone who opens this page">Saved</span>':S.dbState==='off'?' <span class="chip warn" title="Requests stay in this tab only">This tab only</span>':'');
+  const bm=document.getElementById('brandmark'); if(bm&&!bm.firstChild) bm.innerHTML=mascot(34);
+}
+/* Nuki: original mascot for this prototype (not an official VNUK mark) */
+function mascot(size,wave){return '<svg class="'+(wave?'mascot-wave':'')+'" width="'+size+'" height="'+size+'" viewBox="0 0 100 100" role="img" aria-label="Nuki the owl"><ellipse cx="50" cy="62" rx="34" ry="32" fill="#0F7C80"/><ellipse cx="50" cy="72" rx="20" ry="17" fill="#DCEEED"/><path class="wing-l" d="M17 60 Q8 72 19 84 Q24 72 22 60Z" fill="#0B5F63"/><path class="wing-r" d="M82 62 Q93 52 88 41 Q79 50 77 61Z" fill="#0B5F63"/><circle cx="37" cy="52" r="12.5" fill="#FCFDFD"/><circle cx="63" cy="52" r="12.5" fill="#FCFDFD"/><circle cx="39" cy="53" r="6" fill="#14324A"/><circle cx="61" cy="53" r="6" fill="#14324A"/><circle cx="41.5" cy="50.5" r="2" fill="#FCFDFD"/><circle cx="63.5" cy="50.5" r="2" fill="#FCFDFD"/><path d="M46 62 L54 62 L50 69 Z" fill="#E8A23A"/><circle cx="28" cy="64" r="3.6" fill="#F2A7A0" opacity=".75"/><circle cx="72" cy="64" r="3.6" fill="#F2A7A0" opacity=".75"/><path d="M50 13 L82 24 L50 35 L18 24 Z" fill="#B3202E"/><rect x="39" y="26" width="22" height="11" rx="2" fill="#8E1A25"/><path d="M82 24 L82 38" stroke="#E8A23A" stroke-width="2.6"/><circle cx="82" cy="40" r="3.2" fill="#E8A23A"/></svg>';}
+function page(cur,html){nav(cur);document.getElementById('view').innerHTML=html;if(!NOSCROLL)window.scrollTo(0,0)}
+const DOMAINS=['vnuk.edu.vn','vnuk.udn.vn'];
+function renderSignin(){
+  page('','<main class="gut"><div class="inner" style="max-width:520px"><section class="section"><h1 style="font-size:28px">Sign in</h1><p>Use your VNUK student email. Only university accounts can use the desk.</p>'+
+   '<form class="req" data-form="signin"><label class="f" for="si-email">University email<input class="t" id="si-email" type="email" autocomplete="email" placeholder="name@vnuk.edu.vn" value=""></label>'+
+   '<p id="si-err" class="alert bad" hidden></p><div class="chips"><button class="btn primary" type="submit">Continue</button></div></form>'+
+   '<div class="alert info"><b>Prototype sign-in</b><span>The real portal uses VNUK single sign-on and a read-only directory check. Here the desk checks the email domain only, with no password. It never reads grades, fees or enrolment.</span></div></section></div></main>');
+}
+function renderHistory(){
+  const H=S.history; const mine=H.filter(x=>x.who==='you').length;
+  const by=(f)=>{const m={};H.forEach(x=>{m[x[f]]=(m[x[f]]||0)+1});return Object.entries(m).sort((a,b)=>b[1]-a[1]);};
+  const bars=(rows,label)=>'<div class="card"><p class="eyebrow">'+label+'</p>'+rows.map(([k,n])=>'<div style="display:grid;grid-template-columns:minmax(0,1.4fr) minmax(0,2fr) 28px;gap:8px;align-items:center;font-size:14px"><span>'+esc(OFFICES[k]?OFFICES[k].name:k)+'</span><span style="display:block;height:10px;border-radius:5px;background:var(--accent);width:'+Math.round(n/H.length*100)+'%"></span><b style="text-align:right;font-variant-numeric:tabular-nums">'+n+'</b></div>').join('')+'</div>';
+  page('history','<main class="gut"><div class="inner"><section class="section"><h1 style="font-size:30px">Request history from email</h1><p>Real requests from one student’s VNUK mailbox (2024–2026), anonymised: other students appear only as “another student”, with no names or addresses. Used to build the guidance and routing table.</p>'+
+   (H.length?'<div class="kpis"><div class="kpi"><b>'+H.length+'</b><span>Requests logged</span><small>'+mine+' from you · '+(H.length-mine)+' from other students</small></div><div class="kpi warn"><b>'+H.filter(x=>x.channel==='reply-all').length+'</b><span>Asked by reply-all</span><small>To the whole cohort mailing list</small></div><div class="kpi warn"><b>'+H.filter(x=>/refused|not possible/i.test(x.outcome)).length+'</b><span>Ended in “no”</span><small>Because of a rule not known in advance</small></div></div>'+
+   '<div class="two" style="margin-top:6px">'+bars(by('office'),'Requests by office')+bars(by('channel').map(([k,n])=>[k==='reply-all'?'Reply-all to cohort list':k==='direct'?'Direct email to office':k==='lecturer'?'Email to lecturer':k,n]),'How students asked')+'</div>'+
+   '<div class="tablewrap"><table><thead><tr><th>Date</th><th>Who</th><th>Request</th><th>Office</th><th>Channel</th><th>Outcome</th></tr></thead><tbody>'+H.map(x=>'<tr><td style="white-space:nowrap">'+esc(x.date)+'</td><td>'+(x.who==='you'?'You':'Another student')+'</td><td>'+esc(x.request)+'</td><td>'+esc(OFFICES[x.office]?OFFICES[x.office].name:x.office)+'</td><td>'+esc(x.channel)+'</td><td>'+esc(x.outcome)+'</td></tr>').join('')+'</tbody></table></div>'
+   :'<p class="empty">'+(S.dbState==='on'?'No history logged yet.':'History loads from the shared database, which is not available in this view.')+'</p>')+'</section></div></main>');
+}
+function searchBox(v,big){return '<form class="search" data-form="search" role="search"><input id="q" type="search" aria-label="Search guidance" placeholder="Ask a question, e.g. “Can I take more than 23 credits?” or “phúc khảo”" value="'+esc(v||'')+'"><button class="btn primary" type="submit">Search</button></form>'}
+
+/* ---------- pages ---------- */
+const isVi=t=>/[àáảãạăằắẳẵặâầấẩẫậđèéẻẽẹêềếểễệìíỉĩịòóỏõọôồốổỗộơờớởỡợùúủũụưừứửữựỳýỷỹỵ]/i.test(t)||/\b(em|minh|khong|sao|lam sao)\b/.test(fold(t));
+const SUGS=['Can I take more than 23 credits?','Hạn phúc khảo là khi nào?','A course is missing on my Canvas','Làm sao đóng học phí?','I’ll miss class tomorrow','Am I eligible to graduate?'];
+function T(vi,en,v){return v?vi:en}
+function renderHome(){
+  if(!S.me){
+    page('home','<main class="gut"><div class="chatwrap"><div class="welcome">'+mascot(112,true)+'<h1>Hey, I’m Nuki!</h1><p>Your study buddy for registration, exams, fees and campus life. Sign in with your VNUK email to start chatting.</p></div>'+
+      '<form class="acard inline-form" data-form="signin" style="max-width:520px;margin:0 auto;width:100%"><input id="si-email" type="email" autocomplete="email" placeholder="name@vnuk.edu.vn" aria-label="VNUK email"><button class="btn primary" type="submit">Sign in to chat</button><p id="si-err" class="alert bad" style="width:100%" hidden></p></form>'+
+      '<p class="mini" style="justify-content:center;margin-top:12px">Only VNUK accounts can use Nuki. Most questions are answered right here in the chat; only the ones Nuki can’t answer are emailed to an office.</p></div></main>');
+    return;
+  }
+  const msgs=S.chat;
+  let h='<main class="gut"><div class="chatwrap">';
+  if(!msgs.length){
+    h+='<div class="welcome">'+mascot(112,true)+'<h1>Hey, I’m Nuki!</h1><p>Your study buddy for registration, exams, fees and campus life. I answer from guidance the offices gave, and if I can’t, I’ll pass you to the right person with one request ID.</p><p style="font-size:14px">Chat in English or Tiếng Việt.</p></div><div style="display:flex;justify-content:center"><div class="sugs">'+SUGS.map(q=>'<button type="button" data-act="chip" data-q="'+esc(q)+'">'+esc(q)+'</button>').join('')+'</div></div>';
+  }
+  h+='<div class="msgs" id="msgs">'+msgs.map(renderMsg).join('')+(S.typing?'<div class="brow"><span class="av">'+mascot(38)+'</span><div class="bubble" aria-label="Nuki is typing"><span class="dots"><i></i><i></i><i></i></span></div></div>':'')+'</div>';
+  h+='<div class="composer"><form data-form="chat"><input id="chat-in" autocomplete="off" aria-label="Message Nuki" placeholder="Ask Nuki anything… / Hỏi Nuki bất cứ điều gì…"><button class="send" type="submit" aria-label="Send">↑</button></form><p class="hint">Nuki never sees your grades or fees and won’t guess on official decisions.</p></div></div></main>';
+  page('home',h);
+  if(msgs.length&&!NOSCROLL){ const me=[...document.querySelectorAll('.bubble.me')].pop(); const nav=document.querySelector('nav.top'); const off=(nav?nav.getBoundingClientRect().height:0)+24; if(me){ window.scrollTo(0, Math.max(0, me.getBoundingClientRect().top + window.scrollY - off)); } }
+}
+function botRow(inner){return '<div class="brow"><span class="av">'+mascot(38)+'</span><div class="bcol">'+inner+'</div></div>'}
+function renderMsg(m,i){
+  const v=m.vi;
+  if(m.from==='me') return '<p class="bubble me">'+esc(m.text)+'</p>';
+  if(m.kind==='answer'){
+    const k=KB.find(x=>x.id===m.id),o=OFFICES[k.office];
+    const rate=m.rating?'<span class="mini">'+T('Cảm ơn bạn! Bạn chấm ','Thanks! You rated this ',v)+m.rating+'/5'+(m.rating<=3?T(' — mình đã báo team cải thiện.',' — I’ve flagged it for the team.',v):'')+'</span>':'<span class="mini">'+T('Hữu ích không?','Helpful?',v)+' '+[1,2,3,4,5].map(n=>'<button type="button" data-act="crate" data-i="'+i+'" data-n="'+n+'" aria-label="'+n+' out of 5">'+n+'</button>').join('')+'</span>';
+    return botRow('<p class="bubble">'+esc(m.intro)+'</p><div class="acard"><div class="chips"><span class="chip ok">'+T('Hướng dẫn','Guidance',v)+'</span><span class="chip">'+esc(o.name)+'</span></div><h4>'+esc(k.title)+'</h4><p>'+esc(k.summary)+'</p><ol>'+k.steps.slice(0,3).map(x=>'<li>'+esc(x)+'</li>').join('')+'</ol><p class="src">'+T('Nguồn','Source',v)+': '+esc(k.source)+' · '+T('cập nhật','as of',v)+' '+esc(k.asof)+' · '+T('bản nháp chờ duyệt','draft, awaiting approval',v)+'</p><div class="chips"><a class="btn small" href="#a-'+k.id+'">'+T('Xem đầy đủ','Full guide',v)+'</a>'+(m.offered?'':'<button class="btn small" type="button" data-act="askoffice" data-i="'+i+'">'+T('Vẫn cần giúp? Hỏi phòng ban','Still stuck? Ask the office',v)+'</button>')+'</div>'+rate+'</div>'+(m.alts&&m.alts.length?'<p class="mini">'+T('Có thể bạn cũng cần:','You might also need:',v)+' '+m.alts.map(a=>'<a href="#a-'+a+'">'+esc(KB.find(x=>x.id===a).title)+'</a>').join(' · ')+'</p>':''));
+  }
+  if(m.kind==='guard'||m.kind==='nomatch'){
+    const o=OFFICES[m.office];
+    return botRow('<p class="bubble">'+esc(m.intro)+'</p>'+(m.offered?'':'<div class="acard warn"><p>'+esc(m.why)+'</p><div class="chips"><button class="btn small primary" type="button" data-act="askoffice" data-i="'+i+'">'+T('Gửi cho ','Send it to ',v)+esc(o.name)+'</button></div></div>'));
+  }
+  if(m.kind==='lect') return botRow('<p class="bubble">'+esc(m.text)+'</p>');
+  if(m.kind==='signin'){
+    if(m.done) return botRow('<p class="bubble">'+T('Đã xác minh ','Verified ',v)+esc(m.done)+' ✓</p>');
+    return botRow('<p class="bubble">'+T('Cho mình xin email VNUK của bạn trước nha (chỉ tài khoản VNUK mới dùng được).','Quick check first: what’s your VNUK email? Only university accounts can send requests.',v)+'</p><form class="acard inline-form" data-form="chatsignin" data-i="'+i+'"><input id="cs-email-'+i+'" type="email" autocomplete="email" placeholder="name@vnuk.edu.vn" aria-label="VNUK email"><button class="btn small primary" type="submit">'+T('Xác minh','Verify',v)+'</button>'+(m.err?'<p style="width:100%;color:var(--bad);font-size:13px">'+esc(m.err)+'</p>':'')+'</form>');
+  }
+  if(m.kind==='confirm'){
+    const o=OFFICES[m.office];
+    if(m.state==='cancel') return botRow('<p class="bubble">'+T('Ok, không gửi nha. Cần gì cứ hỏi mình!','No problem, nothing sent. I’m here if you need me!',v)+'</p>');
+    if(m.state) return '';
+    return botRow('<p class="bubble">'+T('Mình sẽ gửi câu hỏi này cho ','I’ll send this to ',v)+'<b>'+esc(o.name)+'</b>'+T(' kèm mã yêu cầu và những gì bạn đã đọc. Gửi nhé?',' with one request ID and what you already read, so they don’t start from zero. Send it?',v)+'</p><div class="chips"><button class="btn small primary" type="button" data-act="sendreq" data-i="'+i+'">'+T('Gửi','Send',v)+'</button><button class="btn small" type="button" data-act="cancelreq" data-i="'+i+'">'+T('Không, cảm ơn','Not now',v)+'</button></div>');
+  }
+  if(m.kind==='sent') return botRow('<p class="bubble">'+(m.dup?T('Bạn đã gửi câu này rồi nè: ','You already sent this one: ',v)+'<span class="rid">'+m.id+'</span>'+T('. Mình không tạo yêu cầu thứ hai.','. I didn’t open a second case.',v):T('Xong! Mã yêu cầu của bạn là ','Done! Your request ID is ',v)+'<span class="rid">'+m.id+'</span>. '+T('Theo dõi ở ','Track replies in ',v)+'<a href="#requests">My requests</a>.')+'</p>');
+  return '';
+}
+function botAnswer(q){
+  const v=isVi(q),r=search(q);
+  S.query=q; log('query · “'+q.slice(0,40)+'”');
+  if(r.guard){ log('decision_question_refused'); return {from:'bot',vi:v,kind:'guard',q,office:r.guard.office,why:r.guard.why,intro:T('Câu này cần phòng ban quyết định nên mình không đoán bừa đâu.','That one needs a real decision from the office, so I won’t guess.',v)}; }
+  if(r.confident){ const k=r.res[0].k; log('guidance_retrieved · '+k.id);
+    const intros=v?['Mình tìm được cái này nè:','Có ngay! Đây là hướng dẫn:','Câu này nhiều bạn hỏi lắm. Đây nè:']:['Got you. Here’s what I found:','Good question! This should help:','Lots of students ask this one. Here you go:'];
+    return {from:'bot',vi:v,kind:'answer',q,id:k.id,alts:r.res.slice(1,3).filter(x=>x.s>=4).map(x=>x.k.id),intro:intros[S.chat.length%3]}; }
+  log('no_confident_match'); addFeedback({kind:'gap',q,note:'No approved article matched'});
+  return {from:'bot',vi:v,kind:'nomatch',q,office:'aa',why:T('Mình đã ghi lại câu hỏi để team bổ sung hướng dẫn. Bạn có thể gửi thẳng cho phòng ban ngay.','I’ve noted it so the team can add guidance. You can still send it to an office now.',v),intro:T('Hmm, mình chưa có hướng dẫn chính thức cho câu này, nên không đoán bừa đâu.','Hmm, I don’t have approved guidance on that yet, and I’d rather not guess.',v)};
+}
+function chatSend(q){
+  S.chat.push({from:'me',text:q}); S.typing=true; renderHome();
+  setTimeout(()=>{ S.typing=false; S.chat.push(botAnswer(q)); if((location.hash||'#home')==='#home'||location.hash==='') renderHome(); },650);
+}
+function createRequest(office,subject,q,article,copy){
+  const dupe=S.requests.find(r=>r.student===S.me&&r.status!=='Resolved'&&fold(r.q)===fold(q));
+  if(dupe){S.dup++;log('duplicate_blocked · '+dupe.id);return {id:dupe.id,dup:true};}
+  const id=nextId();
+  const r={id,office,subject,q,student:S.me,article:article||'',status:'Sent',reply:'',mails:[{k:'routed',at:Date.now()}],created:new Date().toLocaleString('en-GB',{day:'2-digit',month:'short',hour:'2-digit',minute:'2-digit'}),at:Date.now(),copy:copy!==false,confirmed:null,reassigned:false};
+  S.requests.unshift(r); saveReq(r); log('request_routed · '+id+' · '+OFFICES[office].name); log('email_sent · '+id);
+  return {id,dup:false};
+}
+function offerOffice(i){
+  const m=S.chat[i]; m.offered=true; const office=m.kind==='answer'?KB.find(x=>x.id===m.id).office:m.office;
+  if(office==='lect'){ S.chat.push({from:'bot',vi:m.vi,kind:'lect',text:T('Vụ này là giữa bạn và giảng viên nha. Email thẳng cho thầy/cô, ghi tên môn ở tiêu đề và lý do ngắn gọn.','This one’s between you and your lecturer. Email them directly with the course name in the subject and a short reason.',m.vi)}); return; }
+  const conf={from:'bot',vi:m.vi,kind:'confirm',office,q:m.q,article:m.kind==='answer'?m.id:'',state:null};
+  if(!S.me){ S.chat.push({from:'bot',vi:m.vi,kind:'signin',next:conf}); return; }
+  S.chat.push(conf);
+}
+function renderResults(){
+  const q=S.query; const r=S.lastResults||search(q);
+  let h='<main class="gut"><div class="inner"><section class="section">'+searchBox(q)+'</section>';
+  if(r.guard){
+    const o=OFFICES[r.guard.office];
+    h+='<section class="section"><div class="alert warn"><b>This desk won’t guess an answer to this.</b><span>'+esc(r.guard.why)+'</span></div>'+
+     '<div class="card"><p class="eyebrow">Goes to</p><h3>'+esc(o.name)+'</h3><p class="meta">'+esc(o.email)+(o.extra?' · '+esc(o.extra):'')+'</p><div><a class="btn primary" href="#ask" data-act="prefill" data-office="'+r.guard.office+'">Send this question to '+esc(o.name)+'</a></div></div></section>';
+  } else if(r.confident){
+    const k=r.res[0].k,o=OFFICES[k.office];
+    h+='<section class="section"><div class="answer"><div class="chips"><span class="chip ok">Best match</span><span class="chip">'+esc(TOPICS.find(t=>t.id===k.topic).name)+'</span><span class="chip warn">Draft · awaiting approval</span></div><h2>'+esc(k.title)+'</h2><p>'+esc(k.summary)+'</p><ol class="steps">'+k.steps.map(s=>'<li>'+esc(s)+'</li>').join('')+'</ol>'+
+     '<dl class="facts"><div><dt>Owner</dt><dd>'+esc(o.name)+'</dd></div><div><dt>Source</dt><dd>'+esc(k.source)+'</dd></div><div><dt>As of</dt><dd>'+esc(k.asof)+'</dd></div></dl>'+
+     '<div class="chips"><a class="btn" href="#a-'+k.id+'">Open full article</a><a class="btn" href="#ask" data-act="prefill" data-article="'+k.id+'">Still need help? Ask '+esc(o.name)+'</a></div></div></section>';
+    if(r.res.length>1) h+='<section class="section"><h2>Related</h2><div class="list">'+r.res.slice(1,5).map(x=>'<a href="#a-'+x.k.id+'"><span>'+esc(x.k.title)+'</span><small>'+esc(OFFICES[x.k.office].name)+'</small></a>').join('')+'</div></section>';
+  } else {
+    h+='<section class="section"><div class="alert warn"><b>No approved guidance matches this yet.</b><span>The desk will not guess. Your question has been added to the content-gap review, and you can send it to an office now.</span></div>'+
+     (r.res.length?'<h2>Closest articles</h2><div class="list">'+r.res.slice(0,4).map(x=>'<a href="#a-'+x.k.id+'"><span>'+esc(x.k.title)+'</span><small>'+esc(OFFICES[x.k.office].name)+'</small></a>').join('')+'</div>':'')+
+     '<div><a class="btn primary" href="#ask" data-act="prefill">Send my question to an office</a></div></section>';
+  }
+  h+='</div></main>'; page('',h);
+}
+function renderArticle(id){
+  const k=KB.find(x=>x.id===id); if(!k) return renderHome();
+  const o=OFFICES[k.office]; const rated=S._rated&&S._rated[id];
+  const rel=KB.filter(x=>x.topic===k.topic&&x.id!==k.id);
+  log('article_viewed · '+k.id);
+  page('',
+  '<main class="gut"><div class="inner"><p style="margin-bottom:14px"><a href="#t-'+k.topic+'">← '+esc(TOPICS.find(t=>t.id===k.topic).name)+'</a></p><div class="two"><article class="answer">'+
+   '<div class="chips"><span class="chip info">'+esc(k.id)+'</span><span class="chip warn">Draft · awaiting Academic Affairs approval</span></div>'+
+   '<h1 style="font-size:28px">'+esc(k.title)+'</h1><p style="font-size:17px">'+esc(k.summary)+'</p>'+
+   '<h3>Steps</h3><ol class="steps">'+k.steps.map(s=>'<li>'+esc(s)+'</li>').join('')+'</ol>'+
+   '<h3>Rules and past decisions</h3><ul class="rules">'+k.rules.map(s=>'<li>'+esc(s)+'</li>').join('')+'</ul>'+
+   '<dl class="facts"><div><dt>Owner</dt><dd>'+esc(o.name)+'</dd></div><div><dt>Source</dt><dd>'+esc(k.source)+'</dd></div><div><dt>As of</dt><dd>'+esc(k.asof)+'</dd></div></dl>'+
+   (rated?'<p class="chips"><span class="chip '+(rated>=4?'ok':'warn')+'">You rated this '+rated+'/5</span>'+(rated<=3?'<span class="chip info">Sent to content-gap review</span>':'')+'</p>':
+   '<div class="rate" role="group" aria-label="Rate this article"><span>Was this useful?</span>'+[1,2,3,4,5].map(n=>'<button type="button" data-act="rate" data-id="'+k.id+'" data-n="'+n+'" aria-label="'+n+' out of 5">'+n+'</button>').join('')+'</div>')+
+   '</article><aside class="side"><div class="card"><p class="eyebrow">Still need help?</p><h3>'+esc(o.name)+'</h3><p class="meta">'+esc(o.vi)+'</p><p class="meta mono">'+esc(o.email)+(o.extra?' · '+esc(o.extra):'')+'</p><a class="btn primary" href="#ask" data-act="prefill" data-article="'+k.id+'">Send a request</a><p class="meta">Urgent? Contact the office directly at the address above.</p></div>'+
+   (rel.length?'<div><p class="eyebrow" style="margin-bottom:6px">In this topic</p><div class="list">'+rel.map(x=>'<a href="#a-'+x.id+'"><span>'+esc(x.title)+'</span></a>').join('')+'</div></div>':'')+
+   '</aside></div></div></main>');
+}
+function renderTopic(id){
+  const t=TOPICS.find(x=>x.id===id); if(!t) return renderTopics();
+  page('topics','<main class="gut"><div class="inner"><section class="section"><p><a href="#topics">← All topics</a></p><h1 style="font-size:30px">'+esc(t.name)+'</h1><p class="meta">'+esc(t.vi)+'</p><div class="cards">'+
+   KB.filter(k=>k.topic===id).map(k=>'<a class="card" href="#a-'+k.id+'"><h3>'+esc(k.title)+'</h3><p>'+esc(k.summary)+'</p><p class="meta">'+esc(OFFICES[k.office].name)+' · as of '+esc(k.asof)+'</p></a>').join('')+'</div></section></div></main>');
+}
+function renderTopics(){
+  page('topics','<main class="gut"><div class="inner"><section class="section"><h1 style="font-size:30px">All topics</h1><p>Browse guidance by topic, or <a href="#home">ask Nuki</a>.</p></section>'+
+   TOPICS.map(t=>'<section class="section"><h2>'+esc(t.name)+' <span class="meta" style="font-weight:400;font-size:15px">· '+esc(t.vi)+'</span></h2><div class="list">'+KB.filter(k=>k.topic===t.id).map(k=>'<a href="#a-'+k.id+'"><span>'+esc(k.title)+'</span><small>'+esc(OFFICES[k.office].name)+'</small></a>').join('')+'</div></section>').join('')+'</div></main>');
+}
+function renderOffices(){
+  page('offices','<main class="gut"><div class="inner"><section class="section"><h1 style="font-size:30px">Who handles what</h1><p>Mapped from real requests and notices. The desk routes each request to one of these.</p>'+
+   '<div class="tablewrap"><table><thead><tr><th>Office</th><th>Contact</th><th>Handles</th><th>Articles</th></tr></thead><tbody>'+
+   Object.entries(OFFICES).map(([k,o])=>'<tr><td><b>'+esc(o.name)+'</b><br><span class="meta">'+esc(o.vi)+'</span></td><td class="mono" style="font-size:13px">'+esc(o.email)+(o.extra?'<br>'+esc(o.extra):'')+'</td><td>'+esc(o.does)+'</td><td>'+KB.filter(x=>x.office===k).length+'</td></tr>').join('')+
+   '</tbody></table></div></section></div></main>');
+}
+function renderAsk(){
+  const pf=S.prefill||{}; const k=pf.article&&KB.find(x=>x.id===pf.article);
+  const office=pf.office||(k?k.office:'aa');
+  page('','<main class="gut"><div class="inner"><div class="two"><section class="section"><h1 style="font-size:28px">Send a request</h1><p>One request, one ID. It goes to the office below by email, with your question and what you already read.</p>'+
+   '<form class="req" data-form="ask">'+
+   '<label class="f" for="r-office">Office<select id="r-office">'+Object.entries(OFFICES).filter(([k])=>k!=='lect').map(([k,o])=>'<option value="'+k+'"'+(k===office?' selected':'')+'>'+esc(o.name)+'</option>').join('')+'</select><span class="h">Chosen from your question. Change it if you know better.</span></label>'+
+   '<label class="f" for="r-subj">Subject<input class="t" id="r-subj" value="'+esc(k?k.title:(S.query||''))+'"></label>'+
+   '<label class="f" for="r-q">Your question<textarea id="r-q">'+esc(S.query||'')+'</textarea><span class="h">Include course codes, sections and deadlines.</span></label>'+
+   '<label class="f" style="flex-direction:row;align-items:center;gap:8px;font-weight:400"><input type="checkbox" id="r-copy" checked> Send me a copy</label>'+
+   '<div class="chips"><button class="btn primary" type="submit">Send request</button><a class="btn" href="#home">Cancel</a></div></form></section>'+
+   '<aside class="side"><div class="card"><p class="eyebrow">Context sent with it</p><p>From: <b>'+esc(S.me)+'</b> (verified account)</p><p>'+(k?'You read: <b>'+esc(k.title)+'</b> ('+k.id+')':'No article matched your question.')+'</p><p class="meta">No grades, fees or enrolment records are read.</p></div>'+
+   (office==='lect'?'<div class="alert warn">This topic belongs to your lecturer. Email them directly.</div>':'')+'</aside></div></div></main>');
+}
+function tracker(r){const o=['Sent','Received','In progress','Resolved'];const i=o.indexOf(r.status);return '<div class="track">'+o.map((s,j)=>'<span class="'+(j<=i?'on':'')+'">'+s+'</span>').join('')+'</div>'}
+function renderRequests(){
+  const list=S.requests.filter(r=>r.student===S.me);
+  page('requests','<main class="gut"><div class="inner"><section class="section"><h1 style="font-size:30px">My requests</h1><p class="meta">Signed in as '+esc(S.me)+'. Only your own requests are shown.</p>'+
+  (list.length?list.map(r=>{const o=OFFICES[r.office];return '<div class="card"><div class="chips" style="justify-content:space-between"><span class="rid">'+r.id+'</span><span class="chip '+(r.status==='Resolved'?'ok':'info')+'">'+esc(r.status)+'</span></div><h3>'+esc(r.subject)+'</h3><p class="meta">To '+esc(o.name)+' · sent '+esc(r.created)+(r.example?' · example':'')+(r.reassigned?' · reassigned':'')+'</p>'+tracker(r)+
+   (r.reply?'<div class="alert ok"><b>Reply from '+esc(o.name)+'</b><span>'+esc(r.reply)+'</span></div>':'')+
+   (r.mails&&r.mails.length?'<p class="meta">Emails: '+r.mails.map(m=>mailLabel(m)).join(' → ')+'</p>':'')+(r.status==='Resolved'&&r.confirmed==null?'<div class="chips"><span>Did this solve it?</span><button class="btn small" type="button" data-act="confirm" data-id="'+r.id+'" data-v="1">Yes</button><button class="btn small" type="button" data-act="confirm" data-id="'+r.id+'" data-v="0">No</button></div>':'')+
+   (r.confirmed!=null?'<p class="chip '+(r.confirmed?'ok':'warn')+'">'+(r.confirmed?'You confirmed: solved':'Reopened for review')+'</p>':'')+'</div>'}).join(''):'<p class="empty">No requests yet.</p>')+
+  '</section></div></main>');
+}
+function mailText(r){const o=OFFICES[r.office];return 'To: '+o.email+(r.copy!==false?'\nCc: '+(r.student||'student'):'')+'\nSubject: ['+r.id+'] '+r.subject+'\n\nStudent: '+(r.student||'unknown')+' (verified account)\nQuestion: '+r.q+'\nAlready read: '+(r.article||'no matching article')+'\n\nUpdate status or close: [status link for '+r.id+']'}
+function mailsAll(){const out=[];S.requests.forEach(r=>(r.mails||[]).forEach((m,i)=>out.push({r,m,key:r.id+':'+i})));return out.sort((a,b)=>(b.m.at||0)-(a.m.at||0));}
+function mailLabel(m){return {routed:'New request',reminder:'Reminder',reply:'Reply to student',resolved:'Rate your answer'}[m.k]||m.k}
+function mailHead(r,m){const o=OFFICES[r.office];
+  const from=m.k==='reply'?esc(o.name)+' &lt;'+esc(o.email)+'&gt;':'Ask Nuki &lt;asknuki@university.example&gt;';
+  const to=(m.k==='routed'||m.k==='reminder')?esc(o.email):esc(r.student||'student');
+  const cc=m.k==='routed'?esc(r.student||'student'):'';
+  const subj={routed:'['+r.id+'] '+esc(r.subject),reminder:'Reminder: ['+r.id+'] needs a status update',reply:'Re: ['+r.id+'] '+esc(r.subject),resolved:'['+r.id+'] Was your question answered?'}[m.k];
+  return '<div class="mail" style="white-space:normal;font-size:13px"><b>From:</b> '+from+'<br><b>To:</b> '+to+(cc?'<br><b>Cc:</b> '+cc:'')+'<br><b>Subject:</b> '+subj+'<br><b>Sent:</b> '+esc(new Date(m.at).toLocaleString('en-GB',{day:'2-digit',month:'short',hour:'2-digit',minute:'2-digit'}))+'</div>';}
+function mailBody(r,m){const o=OFFICES[r.office];const k=KB.find(x=>x.id===r.article);
+  if(m.k==='routed') return '<p>Hello '+esc(o.name)+',</p><p>A student asked Ask Nuki a question it could not fully answer from approved guidance. The student is copied, so you can reply to them directly.</p>'+
+    '<div class="card soft" style="gap:4px"><p><b>Student:</b> '+esc(r.student||'unknown')+' (verified VNUK account)</p><p><b>Topic:</b> '+esc(k?(TOPICS.find(t=>t.id===k.topic)||{name:'Academic enquiry'}).name:(search(r.q).guard?'Official decision (only this office can decide)':'No matching guide yet'))+'</p><p><b>Question:</b> '+esc(r.q)+'</p><p><b>Nuki already showed:</b> '+esc(k?k.title+' ('+k.id+')':'No approved guide matched')+'</p></div>'+
+    '<p>Please reply to the student by email. When you are done, update the status:</p><p><a class="btn primary small" href="#status-'+r.id+'">Update status &amp; feedback · '+r.id+'</a></p><p class="meta">One link per request. No new system to learn.</p>';
+  if(m.k==='reminder') return '<p>Hello '+esc(o.name)+',</p><p>No status has been logged for <span class="rid">'+r.id+'</span> for 2 days. If you have already replied to the student, please just update the status so we know it is closed.</p><p><a class="btn primary small" href="#status-'+r.id+'">Update status &amp; feedback · '+r.id+'</a></p>';
+  if(m.k==='reply') return '<p>'+esc(m.text||'')+'</p><p class="meta">— '+esc(o.name)+'</p>';
+  if(m.k==='resolved') return '<p>Hi,</p><p>'+esc(o.name)+' marked your request <span class="rid">'+r.id+'</span> as resolved. Did their answer solve your question?</p><p><a class="btn primary small" href="#rate-'+r.id+'">Rate the answer</a></p><p class="meta">Your rating helps the office and improves Nuki.</p>';
+  return '';}
+function renderStaff(){
+  const all=mailsAll(); const sel=all.find(x=>x.key===S.mailSel)||null;
+  let right='<p class="empty">Open an email from the inbox.</p>';
+  if(sel){const {r,m}=sel;
+    right='<div class="card">'+mailHead(r,m)+'<div style="display:flex;flex-direction:column;gap:10px">'+mailBody(r,m)+'</div>';
+    if(m.k==='routed'){
+      right+='<hr style="border:0;border-top:1px solid var(--line);width:100%"><p class="eyebrow">Reply to the student (normal email)</p><textarea id="m-reply" placeholder="Write your answer to the student"></textarea><div class="chips"><button class="btn small" type="button" data-act="mdraft" data-id="'+r.id+'">Suggest a draft from the guide</button><button class="btn primary small" type="button" data-act="msend" data-id="'+r.id+'">Send reply</button></div>';
+      if(r.status!=='Resolved'&&!(r.mails||[]).some(x=>x.k==='reminder')) right+='<div class="alert info" style="margin-top:6px"><b>Demo control</b><span>Skip ahead to see the follow-up rule.</span><div><button class="btn small" type="button" data-act="remind" data-id="'+r.id+'">Simulate 2 days with no status</button></div></div>';
+    }
+    right+='</div>';
+  }
+  page('staff','<main class="gut"><div class="inner"><div class="alert info" style="margin-bottom:16px"><b>Demo: a department’s institutional mailbox</b><span>Nuki sends one email per request to the office that owns the topic and copies the student. Staff reply as usual, then click the link in the email to log the status.</span></div><div class="two" style="grid-template-columns:minmax(0,1.5fr) minmax(0,1fr)"><section class="section">'+right+'</section>'+
+  '<aside class="side"><p class="eyebrow">Inbox · all departments</p><div class="list">'+(all.length?all.map(x=>'<button class="li" type="button" data-act="mopen" data-key="'+x.key+'"'+(x.key===S.mailSel?' style="background:var(--accent-soft)"':'')+'><span><span class="chip '+(x.m.k==='reminder'?'warn':x.m.k==='resolved'?'ok':'info')+'">'+mailLabel(x.m)+'</span> <span class="rid">'+x.r.id+'</span><br><small>'+(x.m.k==='reply'||x.m.k==='resolved'?'To '+esc(x.r.student||'student'):'To '+esc(OFFICES[x.r.office].name))+'</small></span><small>'+esc(new Date(x.m.at).toLocaleTimeString('en-GB',{hour:'2-digit',minute:'2-digit'}))+'</small></button>').join(''):'<p class="empty">No emails yet. Send a request from the chat.</p>')+'</div></aside></div></div></main>');
+}
+function renderStatus(id,who){
+  const r=S.requests.find(x=>x.id===id); if(!r){page('','<main class="gut"><div class="inner"><p class="empty">Request not found.</p></div></main>');return;}
+  const o=OFFICES[r.office];
+  let h='<main class="gut"><div class="inner" style="max-width:640px"><section class="section"><p class="eyebrow">Ask Nuki · opened from the email link</p><h1 style="font-size:26px">'+(who==='staff'?'Update status for ':'Rate the answer to ')+'<span class="rid">'+r.id+'</span></h1>'+
+   '<div class="card soft"><p><b>Question:</b> '+esc(r.q)+'</p><p class="meta">'+esc(r.student||'')+' → '+esc(o.name)+' · now: '+esc(r.status)+'</p>'+tracker(r)+'</div>';
+  if(who==='staff'){
+    h+='<form class="req" data-form="stsave" data-id="'+r.id+'"><label class="f" for="st-status">Status<select id="st-status">'+['In progress','Resolved','Wrong office'].map(s=>'<option'+(s===(r.status==='Resolved'?'Resolved':'In progress')?' selected':'')+'>'+s+'</option>').join('')+'</select></label>'+
+     '<label class="f" for="st-office">If wrong office, forward to<select id="st-office">'+Object.entries(OFFICES).filter(([k])=>k!=='lect').map(([k,x])=>'<option value="'+k+'"'+(k===r.office?' selected':'')+'>'+esc(x.name)+'</option>').join('')+'</select></label>'+
+     '<label class="f" for="st-ctx">Did the email give you enough context to act?<select id="st-ctx">'+[5,4,3,2,1].map(n=>'<option value="'+n+'">'+n+' / 5'+(n===5?' (everything I needed)':n===1?' (had to ask again)':'')+'</option>').join('')+'</select></label>'+
+     '<label class="f" for="st-note">Note for the Nuki team (optional)<textarea id="st-note" placeholder="e.g. the guide on late registration is out of date"></textarea></label>'+
+     '<div class="chips"><button class="btn primary" type="submit">Save status</button></div></form>';
+  } else {
+    h+=(r.reply?'<div class="alert ok"><b>Reply from '+esc(o.name)+'</b><span>'+esc(r.reply)+'</span></div>':'')+
+     '<form class="req" data-form="ratesave" data-id="'+r.id+'"><label class="f" for="rt-ok">Did the office answer your question?<select id="rt-ok"><option value="1">Yes, solved</option><option value="0">No, still need help</option></select></label>'+
+     '<label class="f" for="rt-n">How would you rate the answer?<select id="rt-n">'+[5,4,3,2,1].map(n=>'<option value="'+n+'">'+n+' / 5</option>').join('')+'</select></label>'+
+     '<label class="f" for="rt-why">What could be better? (optional)<textarea id="rt-why"></textarea></label><div class="chips"><button class="btn primary" type="submit">Send rating</button></div></form>';
+  }
+  page('',h+'</section></div></main>');
+}
+function renderPilot(){
+  const rated=S.ratings.length,useful=S.ratings.filter(n=>n>=4).length,pU=rated?Math.round(useful/rated*100):0;
+  const routed=S.requests.length,firstOk=S.requests.filter(r=>!r.reassigned).length,pR=routed?Math.round(firstOk/routed*100):0;
+  const k=(c,v,l,s)=>'<div class="kpi '+c+'"><b>'+v+'</b><span>'+l+'</span><small>'+s+'</small></div>';
+  page('pilot','<main class="gut"><div class="inner"><section class="section"><h1 style="font-size:30px">Pilot log</h1><p>Team view for the three-week pilot. Targets are proposed, not measured baselines.</p><div class="kpis">'+
+   k(pU>=80?'ok':'warn',pU+'%','Articles rated 4–5',(pU>=80?'Meets':'Below')+' 80% · '+rated+' ratings')+
+   k(pR>=80?'ok':'warn',pR+'%','Correct first routing',routed+' requests')+
+   k('ok','0','Critical wrong guidance','Target: zero')+
+   k('ok',S.dup,'Duplicates blocked','One ID per case')+
+   k('',S.requests.filter(r=>r.status!=='Resolved').length,'Open requests','Awaiting closure')+k('',(()=>{const c=S.requests.filter(r=>r.ctx);return c.length?(c.reduce((t,r)=>t+r.ctx,0)/c.length).toFixed(1)+'/5':'–'})(),'Staff: context enough','From the status link')+k(S.requests.some(r=>r.reminders)?'warn':'ok',S.requests.reduce((t,r)=>t+(r.reminders||0),0),'Reminders sent','No status after 2 days')+
+   k(S.gaps.length?'warn':'ok',S.gaps.length,'Content gaps','For Maddie + content owner')+
+   '</div></section><div class="two"><section class="section"><h2>Event log</h2><div class="log">'+S.events.map(e=>'<div><time>'+e.t+'</time><span>'+esc(e.e)+(e.ex?' · example':'')+'</span></div>').join('')+'</div></section>'+
+   '<section class="section"><h2>Content-gap queue</h2><div class="list">'+(S.gaps.length?S.gaps.map(g=>'<a href="#pilot"><span>'+esc(g.q)+'<br><small>'+esc(g.note)+(g.ex?' · example':'')+'</small></span></a>').join(''):'<p class="empty">None</p>')+'</div><p class="meta">Reviewed by people. Never used for automatic retraining.</p></section></div></div></main>');
+}
+
+/* ---------- events ---------- */
+function doSearch(q){S.query=q;S.lastResults=search(q);log('query · “'+q.slice(0,40)+'”');
+  const r=S.lastResults; if(r.guard) log('decision_question_refused'); else if(r.confident) log('guidance_retrieved · '+r.res[0].k.id); else {log('no_confident_match');addFeedback({kind:'gap',q,note:'No approved article matched'});}
+  if(location.hash==='#results') renderResults(); else location.hash='results';}
+document.addEventListener('submit',e=>{
+  const f=e.target.dataset.form; if(!f) return; e.preventDefault();
+  if(f==='stsave'){const r=S.requests.find(x=>x.id===e.target.dataset.id);const st=document.getElementById('st-status').value;r.ctx=+document.getElementById('st-ctx').value;r.staffNote=document.getElementById('st-note').value.trim();
+    if(st==='Wrong office'){const no=document.getElementById('st-office').value;if(no!==r.office){r.office=no;r.reassigned=true;r.status='Sent';r.mails=r.mails||[];r.mails.push({k:'routed',at:Date.now()});log('request_forwarded · '+r.id+' · '+OFFICES[no].name);}}
+    else{r.status=st;log('status_logged_via_link · '+r.id+' · '+st);if(st==='Resolved'){r.mails=r.mails||[];r.mails.push({k:'resolved',at:Date.now()});log('rating_email_sent_to_student · '+r.id);}}
+    log('context_rated · '+r.id+' · '+r.ctx+'/5');if(r.staffNote)addFeedback({kind:'gap',q:r.staffNote,note:'Staff note on '+r.id});
+    saveReq(r);toast('Status saved.');location.hash='staff';return;}
+  if(f==='ratesave'){const r=S.requests.find(x=>x.id===e.target.dataset.id);r.confirmed=document.getElementById('rt-ok').value==='1';r.staffRating=+document.getElementById('rt-n').value;const why=document.getElementById('rt-why').value.trim();if(!r.confirmed)r.status='In progress';
+    saveReq(r);log('student_rated_staff_answer · '+r.id+' · '+r.staffRating+'/5');if(why)addFeedback({kind:'gap',q:why,note:'Student comment on '+r.id});toast('Thanks for rating.');location.hash='requests';return;}
+  if(f==='chat'){const inp=document.getElementById('chat-in');const q=inp.value.trim();if(q){inp.value='';chatSend(q);}return;}
+  if(f==='chatsignin'){
+    const i=+e.target.dataset.i,m=S.chat[i],v=(document.getElementById('cs-email-'+i).value||'').trim().toLowerCase(),dom=v.split('@')[1]||'';
+    if(!/^[^@\s]+@[^@\s]+$/.test(v)||!DOMAINS.includes(dom)){m.err=T('Cần email VNUK (@vnuk.edu.vn hoặc @vnuk.udn.vn).','That needs a VNUK email (@vnuk.edu.vn or @vnuk.udn.vn).',m.vi);log('signin_refused · non-VNUK domain');renderHome();return;}
+    S.me=v;try{localStorage.setItem('aed_me',v);}catch(err){} m.done=v; log('signed_in · directory check (demo)'); S.chat.push(m.next); renderHome(); return;
+  }
+  if(f==='search'){const q=document.getElementById('q').value.trim(); if(q) doSearch(q);}
+  if(f==='signin'){
+    const v=document.getElementById('si-email').value.trim().toLowerCase(); const err=document.getElementById('si-err');
+    const dom=v.split('@')[1]||'';
+    if(!/^[^@\s]+@[^@\s]+$/.test(v)||!DOMAINS.includes(dom)){err.hidden=false;err.textContent='Use your VNUK email (ending @vnuk.edu.vn or @vnuk.udn.vn). Other accounts cannot use the desk.';log('signin_refused · non-VNUK domain');return;}
+    S.me=v; try{localStorage.setItem('aed_me',v);}catch(e){}
+    log('signed_in · directory check (demo)'); location.hash=S.after||'home'; S.after=null; route(); return;
+  }
+  if(f==='ask'){
+    const office=document.getElementById('r-office').value,subject=document.getElementById('r-subj').value.trim()||'Academic enquiry',q=document.getElementById('r-q').value.trim();
+    if(!q){toast('Add your question first.');return;}
+    const res=createRequest(office,subject,q,(S.prefill&&S.prefill.article)||'',document.getElementById('r-copy').checked);
+    if(res.dup){toast('Already sent as '+res.id+'. No second case created.');location.hash='requests';return;}
+    const id=res.id;
+    S.prefill=null; toast('Sent as '+id+'. Track it in My requests.'); location.hash='requests';
+  }
+});
+let clearArmed=false;
+document.addEventListener('click',e=>{
+  const b=e.target.closest('[data-act]'); if(!b) return; const a=b.dataset.act;
+  if(a==='pop'){doSearch(b.dataset.q);return;}
+  if(a==='chip'){chatSend(b.dataset.q);return;}
+  if(a==='askoffice'){offerOffice(+b.dataset.i);renderHome();return;}
+  if(a==='crate'){const m=S.chat[+b.dataset.i],n=+b.dataset.n;m.rating=n;addFeedback({kind:'rating',n,article:m.id});log('article_rated · '+m.id+' · '+n+'/5');if(n<=3){addFeedback({kind:'gap',q:m.q,note:'Rated '+n+'/5 in chat'});log('content_gap_flagged · '+m.id);}renderHome();return;}
+  if(a==='sendreq'){const m=S.chat[+b.dataset.i];m.state='sent';const k=m.article&&KB.find(x=>x.id===m.article);const res=createRequest(m.office,k?k.title:(m.q.slice(0,60)),m.q,m.article,true);S.chat.push({from:'bot',vi:m.vi,kind:'sent',id:res.id,dup:res.dup});renderHome();return;}
+  if(a==='cancelreq'){S.chat[+b.dataset.i].state='cancel';renderHome();return;}
+  if(a==='prefill'){S.prefill={article:b.dataset.article,office:b.dataset.office};return;}
+  if(a==='signout'){S.me=null;try{localStorage.removeItem('aed_me');}catch(e){}location.hash='home';route();return;}
+  if(a==='rate'){S._rated=S._rated||{};const n=+b.dataset.n,id=b.dataset.id;S._rated[id]=n;addFeedback({kind:'rating',n,article:id});log('article_rated · '+id+' · '+n+'/5');if(n<=3){addFeedback({kind:'gap',q:KB.find(k=>k.id===id).title,note:'Rated '+n+'/5'});log('content_gap_flagged · '+id);}renderArticle(id);return;}
+  if(a==='confirm'){const r=S.requests.find(x=>x.id===b.dataset.id);r.confirmed=b.dataset.v==='1';if(!r.confirmed)r.status='In progress';saveReq(r);log((r.confirmed?'student_confirmed_solved · ':'student_reopened · ')+r.id);renderRequests();return;}
+  if(a==='mopen'){S.mailSel=b.dataset.key;const [id]=S.mailSel.split(':');const r=S.requests.find(x=>x.id===id);const m=r.mails[+S.mailSel.split(':')[1]];if(m.k==='routed'&&r.status==='Sent'){r.status='Received';saveReq(r);log('email_opened · '+r.id);}renderStaff();return;}
+  if(a==='mdraft'){const r=S.requests.find(x=>x.id===b.dataset.id);const k=KB.find(x=>x.id===r.article);document.getElementById('m-reply').value='Hi, thanks for your question. '+(k?k.summary+' ':'')+'[Add the specific decision for this student.]';log('ai_draft_suggested · '+r.id);return;}
+  if(a==='msend'){const r=S.requests.find(x=>x.id===b.dataset.id);const t=(document.getElementById('m-reply').value||'').trim();if(!t){toast('Write a reply first.');return;}r.reply=t;r.mails=r.mails||[];r.mails.push({k:'reply',at:Date.now(),text:t});if(r.status!=='Resolved')r.status='In progress';saveReq(r);log('staff_replied_by_email · '+r.id);S.mailSel=r.id+':'+(r.mails.length-1);toast('Reply sent to the student.');renderStaff();return;}
+  if(a==='remind'){const r=S.requests.find(x=>x.id===b.dataset.id);r.mails=r.mails||[];r.mails.push({k:'reminder',at:Date.now()});r.reminders=(r.reminders||0)+1;saveReq(r);log('reminder_sent_after_2_days · '+r.id);S.mailSel=r.id+':'+(r.mails.length-1);toast('2 days later: reminder sent to the office.');renderStaff();return;}
+  if(a==='open'){S.staffSel=b.dataset.id;const r=S.requests.find(x=>x.id===S.staffSel);if(r.status==='Sent'){r.status='Received';saveReq(r);log('status_received · '+r.id);}renderStaff();return;}
+  if(a==='draft'){const r=S.requests.find(x=>x.id===S.staffSel);const k=KB.find(x=>x.id===r.article);document.getElementById('s-reply').value=(k?'Thanks for your question. '+k.summary+' ':'Thanks for your question. ')+'[Add the specific decision before resolving.]';log('ai_draft_suggested · '+r.id);return;}
+  if(a==='save'){const r=S.requests.find(x=>x.id===S.staffSel);const st=document.getElementById('s-status').value;
+    if(st==='Wrong office'){const no=document.getElementById('s-office').value;if(no!==r.office){r.office=no;r.reassigned=true;r.status='Sent';log('request_reassigned · '+r.id+' · '+OFFICES[no].name);}}
+    else{r.status=st;r.reply=document.getElementById('s-reply').value.trim();log('status_'+st.toLowerCase().replace(' ','_')+' · '+r.id);}
+    saveReq(r); toast('Saved. The student sees the update.');renderStaff();return;}
+  if(a==='reset'){
+    if(!clearArmed){clearArmed=true;b.textContent='Click again to delete all demo requests, ratings and events';setTimeout(()=>{clearArmed=false;b.textContent='Clear demo data';},5000);return;}
+    clearArmed=false;b.textContent='Clear demo data';
+    if(DB){ ['requests','feedback','events'].forEach(c=>DB.collection(c).get().then(s=>s.docs.forEach(d=>DB.collection(c).doc(d.id).delete().catch(()=>{}))).catch(()=>{})); }
+    const keep={me:S.me,history:S.history,dbState:S.dbState,chat:[]}; seed(); Object.assign(S,keep); toast('Demo data cleared. Request history kept.'); location.hash='home'; route(); return;}
+});
+window.addEventListener('hashchange',route);
+route();
+})();
+</script>
